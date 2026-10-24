@@ -1,12 +1,6 @@
 name: FA Universal Agent
 
 on:
-  issue_comment:
-    types: [created]
-  issues:
-    types: [opened]
-  pull_request_review_comment:
-    types: [created]
   repository_dispatch:
     types: [fa-trigger, fa-webhook]
   workflow_dispatch:
@@ -50,12 +44,6 @@ permissions:
 
 jobs:
   agent:
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'repository_dispatch' ||
-      (github.event_name == 'issues' && contains(github.event.issue.body, '@fa')) ||
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@fa') && github.event.comment.user.type != 'Bot') ||
-      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@fa') && github.event.comment.user.type != 'Bot')
     uses: IstiN/dmtools-agentic-workflows/.github/workflows/fa-universal.yml@main
     with:
       provider: ${{ inputs.provider || github.event.client_payload.provider || 'github' }}
