@@ -1,0 +1,68 @@
+name: FA Universal Agent
+
+on:
+  issue_comment:
+    types: [created]
+  issues:
+    types: [opened]
+  pull_request_review_comment:
+    types: [created]
+  repository_dispatch:
+    types: [fa-trigger, fa-webhook]
+  workflow_dispatch:
+    inputs:
+      provider:
+        description: "Source provider (github, gitlab, bitbucket, jira, ado, bitrise, generic)"
+        required: false
+        default: "github"
+        type: string
+      target_repo:
+        description: "Target repository (owner/repo)"
+        required: false
+        default: ""
+        type: string
+      issue_number:
+        description: "Issue / PR / MR number"
+        required: false
+        default: ""
+        type: string
+      session_key:
+        description: "Explicit session key"
+        required: false
+        default: ""
+        type: string
+      comment_id:
+        description: "Triggering comment ID"
+        required: false
+        default: ""
+        type: string
+      prompt:
+        description: "Direct prompt or instruction"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  actions: write
+
+jobs:
+  agent:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'repository_dispatch' ||
+      (github.event_name == 'issues' && contains(github.event.issue.body, '@fa')) ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@fa') && github.event.comment.user.type != 'Bot') ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@fa') && github.event.comment.user.type != 'Bot')
+    uses: IstiN/dmtools-agentic-workflows/.github/workflows/fa-universal.yml@main
+    with:
+      provider: ${{ inputs.provider || github.event.client_payload.provider || 'github' }}
+      target_repo: ${{ inputs.target_repo || github.event.client_payload.target_repo || github.repository }}
+      issue_number: ${{ inputs.issue_number || github.event.client_payload.issue_number || (github.event.issue && format('{0}', github.event.issue.number)) || (github.event.pull_request && format('{0}', github.event.pull_request.number)) || '' }}
+      session_key: ${{ inputs.session_key || github.event.client_payload.session_key || '' }}
+      comment_id: ${{ inputs.comment_id || github.event.client_payload.comment_id || (github.event.comment && format('{0}', github.event.comment.id)) || '' }}
+      prompt: ${{ inputs.prompt || github.event.client_payload.prompt || (github.event.comment && github.event.comment.body) || (github.event.issue && github.event.issue.body) || '' }}
+      post_reply_to_issue: true
+    secrets: inherit
