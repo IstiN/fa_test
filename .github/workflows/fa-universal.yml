@@ -48,10 +48,10 @@ jobs:
     with:
       provider: ${{ inputs.provider || github.event.client_payload.provider || 'github' }}
       target_repo: ${{ inputs.target_repo || github.event.client_payload.target_repo || github.repository }}
-      issue_number: ${{ inputs.issue_number || github.event.client_payload.issue_number || (github.event.issue && format('{0}', github.event.issue.number)) || (github.event.pull_request && format('{0}', github.event.pull_request.number)) || '' }}
+      issue_number: ${{ inputs.issue_number || github.event.client_payload.issue_number || '' }}
       session_key: ${{ inputs.session_key || github.event.client_payload.session_key || '' }}
-      comment_id: ${{ inputs.comment_id || github.event.client_payload.comment_id || (github.event.comment && format('{0}', github.event.comment.id)) || '' }}
-      prompt: ${{ inputs.prompt || github.event.client_payload.prompt || (github.event.comment && github.event.comment.body) || (github.event.issue && github.event.issue.body) || '' }}
+      comment_id: ${{ inputs.comment_id || github.event.client_payload.comment_id || '' }}
+      prompt: ${{ inputs.prompt || github.event.client_payload.prompt || '' }}
       provider_name: "kimi"
       model: "kimi-for-coding"
       post_reply_to_issue: true
