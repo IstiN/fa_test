@@ -64,5 +64,7 @@ jobs:
       session_key: ${{ inputs.session_key || github.event.client_payload.session_key || '' }}
       comment_id: ${{ inputs.comment_id || github.event.client_payload.comment_id || (github.event.comment && format('{0}', github.event.comment.id)) || '' }}
       prompt: ${{ inputs.prompt || github.event.client_payload.prompt || (github.event.comment && github.event.comment.body) || (github.event.issue && github.event.issue.body) || '' }}
+      provider_name: "kimi"
+      model: "kimi-for-coding"
       post_reply_to_issue: true
     secrets: inherit
